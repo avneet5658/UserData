@@ -1,10 +1,20 @@
-import React from "react";
+import debounce from "lodash.debounce";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserItem } from "../redux/userAction";
 
 const MainComponent = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userData);
+  const debouncedSave = useCallback(
+    debounce((userCount) => dispatch(fetchUserItem(userCount)), 700),
+    []
+  );
+
+  const handleSearch = (e) => {
+    const userCount = e.target.value;
+    debouncedSave(userCount);
+  };
   return (
     <div>
       <center>
@@ -19,7 +29,7 @@ const MainComponent = () => {
                 className="form-control"
                 type="number"
                 placeholder="Enter the number of users you wish to see"
-                onChange={(e) => dispatch(fetchUserItem(e.target.value))}
+                onChange={(e) => handleSearch(e)}
               />
             </div>
           </div>
@@ -55,7 +65,7 @@ const MainComponent = () => {
                     <br />
                     <b>Address: </b>
                     {data.location.street.number}, {data.location.street.name},
-                    {data.location.city}, {data.location.state},
+                    {data.location.userCount}, {data.location.state},
                     {data.location.country}
                   </div>
                 </div>
